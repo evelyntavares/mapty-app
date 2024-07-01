@@ -11,7 +11,7 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
-let map;
+let map, mapEvent;
 
 const getGeoLocation = function (position) {
   const { latitude, longitude } = position.coords;
@@ -24,10 +24,26 @@ const getGeoLocation = function (position) {
     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
   }).addTo(map);
 
-  map.on('click', addMarkerToMap);
+  map.on('click', function (mapE) {
+    mapEvent = mapE;
+    form.classList.remove('hidden');
+    inputDistance.focus();
+  });
 };
 
-const addMarkerToMap = function (mapEvent) {
+navigator.geolocation.getCurrentPosition(getGeoLocation, function () {
+  alert('Unable to determine position');
+});
+
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  inputDistance.value =
+    inputDuration.value =
+    inputCadence.value =
+    inputElevation.value =
+      '';
+
   const { lat, lng } = mapEvent.latlng;
   const coords = [lat, lng];
 
@@ -44,8 +60,9 @@ const addMarkerToMap = function (mapEvent) {
     .bindPopup(L.popup(popupConfig))
     .setPopupContent('Workout')
     .openPopup();
-};
+});
 
-navigator.geolocation.getCurrentPosition(getGeoLocation, function () {
-  alert('Unable to determine position');
+inputType.addEventListener('change', function (e) {
+  inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+  inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
 });
