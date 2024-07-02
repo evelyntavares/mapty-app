@@ -57,10 +57,6 @@ class Cycling extends Workout {
   }
 }
 
-// const run = new Running([39, -12], 50, 180, 178);
-// const cycling = new Cycling([39, -12.5], 27, 95, 523);
-// console.log(run, cycling);
-
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
