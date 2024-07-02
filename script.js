@@ -79,6 +79,8 @@ class App {
   constructor() {
     this._getPosition();
 
+    this._getLocalStorage();
+
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
@@ -105,6 +107,8 @@ class App {
     }).addTo(this.#map);
 
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(workout => this._renderWorkoutMarker(workout));
   }
 
   _showForm(mapE) {
@@ -177,6 +181,7 @@ class App {
     this._renderWorkout(workout);
 
     this._hideForm();
+    this._setLocalStorage();
   }
 
   _renderWorkoutMarker(workout) {
@@ -266,6 +271,21 @@ class App {
     };
 
     this.#map.setView(workout.coords, this.#mapZoomLevel, viewOptions);
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    const storage = JSON.parse(localStorage.getItem('workouts'));
+
+    if (!storage) {
+      return;
+    }
+
+    this.#workouts = storage;
+    this.#workouts.forEach(workout => this._renderWorkout(workout));
   }
 }
 
