@@ -74,11 +74,14 @@ class App {
   #mapEvent;
   #workouts = [];
 
+  #mapZoomLevel = 14;
+
   constructor() {
     this._getPosition();
 
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
 
   _getPosition() {
@@ -94,7 +97,7 @@ class App {
     const { latitude, longitude } = position.coords;
 
     const coords = [latitude, longitude];
-    this.#map = L.map('map').setView(coords, 14);
+    this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
 
     L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       maxZoom: 20,
@@ -242,6 +245,27 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToPopup(e) {
+    const workoutClicked = e.target.closest('.workout');
+
+    if (!workoutClicked) {
+      return;
+    }
+
+    const workout = this.#workouts.find(
+      work => work.id === workoutClicked.dataset.id
+    );
+
+    const viewOptions = {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    };
+
+    this.#map.setView(workout.coords, this.#mapZoomLevel, viewOptions);
   }
 }
 
